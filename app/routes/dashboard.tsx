@@ -1,6 +1,6 @@
 import type { Route } from "./+types/dashboard";
 import { auth } from "../firebase.config";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import type { User } from "firebase/auth";
@@ -15,6 +15,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedVehicle, setSelectedVehicle] = useState<string>("small-van");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,18 +56,27 @@ export default function Dashboard() {
           <h1 className="text-lg font-bold tracking-tight hidden md:block text-[#E6E8EA]">Moving Co.</h1>
         </div>
         <div className="flex-1 flex flex-col gap-2 px-3">
-          <a className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#C9A24D]/20 text-[#C9A24D] group" href="#">
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#C9A24D]/20 text-[#C9A24D] group"
+          >
             <span className="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
             <p className="text-sm font-medium hidden md:block">Dashboard</p>
-          </a>
-          <a className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#0B131A] text-[#9BA7B0] transition-colors group" href="#">
+          </Link>
+          <Link
+            to="/moves"
+            className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#0B131A] text-[#9BA7B0] transition-colors group"
+          >
             <span className="material-symbols-outlined group-hover:scale-110 transition-transform">history</span>
             <p className="text-sm font-medium hidden md:block">My Moves</p>
-          </a>
-          <a className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#0B131A] text-[#9BA7B0] transition-colors group" href="#">
+          </Link>
+          <Link
+            to="/wallet"
+            className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#0B131A] text-[#9BA7B0] transition-colors group"
+          >
             <span className="material-symbols-outlined group-hover:scale-110 transition-transform">account_balance_wallet</span>
             <p className="text-sm font-medium hidden md:block">Wallet</p>
-          </a>
+          </Link>
           <a className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#0B131A] text-[#9BA7B0] transition-colors group" href="#">
             <span className="material-symbols-outlined group-hover:scale-110 transition-transform">chat</span>
             <p className="text-sm font-medium hidden md:block">Messages</p>
@@ -161,15 +171,28 @@ export default function Dashboard() {
               Choose your vehicle
             </h3>
             <div className="flex flex-col gap-3">
-              {/* Option 1 */}
-              <button className="flex items-center gap-4 p-3 rounded-xl border-2 border-[#C9A24D] bg-[#C9A24D]/10 relative overflow-hidden text-left transition-all">
-                <div className="bg-[#0B131A] rounded-lg p-2 shrink-0 shadow-sm">
-                  <span className="material-symbols-outlined text-3xl text-[#E6E8EA]">local_shipping</span>
+              {/* Option 1 - Small Van */}
+              <button 
+                onClick={() => setSelectedVehicle("small-van")}
+                className={`flex items-center gap-4 p-3 rounded-xl relative overflow-hidden text-left transition-all ${
+                  selectedVehicle === "small-van"
+                    ? "border-2 border-[#C9A24D] bg-[#C9A24D]/20"
+                    : "border border-[#22303B] hover:border-[#C9A24D]/50 hover:bg-[#0B131A]"
+                }`}
+              >
+                <div className={`rounded-lg p-2 shrink-0 ${selectedVehicle === "small-van" ? "bg-[#0B131A] shadow-sm" : "bg-[#0B131A]"}`}>
+                  <span className={`material-symbols-outlined text-3xl ${selectedVehicle === "small-van" ? "text-[#E6E8EA]" : "text-[#9BA7B0]"}`}>
+                    local_shipping
+                  </span>
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-center w-full">
-                    <p className="text-[#E6E8EA] font-bold text-base">Small Van</p>
-                    <p className="text-[#E6E8EA] font-bold text-base">$85.00</p>
+                    <p className={`text-base ${selectedVehicle === "small-van" ? "text-[#E6E8EA] font-bold" : "text-[#E6E8EA] font-semibold"}`}>
+                      Small Van
+                    </p>
+                    <p className={`text-base ${selectedVehicle === "small-van" ? "text-[#E6E8EA] font-bold" : "text-[#E6E8EA] font-semibold"}`}>
+                      $85.00
+                    </p>
                   </div>
                   <div className="flex justify-between items-center w-full">
                     <p className="text-[#9BA7B0] text-xs truncate">Studio apartments & small items</p>
@@ -177,41 +200,77 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {/* Active Indicator */}
-                <div className="absolute right-0 top-0 bottom-0 w-1.5 bg-[#C9A24D] rounded-r-xl"></div>
+                {selectedVehicle === "small-van" && (
+                  <div className="absolute right-0 top-0 bottom-0 w-1.5 bg-[#C9A24D] rounded-r-xl"></div>
+                )}
               </button>
 
-              {/* Option 2 */}
-              <button className="flex items-center gap-4 p-3 rounded-xl border border-[#22303B] hover:border-[#C9A24D]/50 hover:bg-[#0B131A] text-left transition-all">
-                <div className="bg-[#0B131A] rounded-lg p-2 shrink-0">
-                  <span className="material-symbols-outlined text-3xl text-[#9BA7B0]">airport_shuttle</span>
+              {/* Option 2 - Medium Truck */}
+              <button 
+                onClick={() => setSelectedVehicle("medium-truck")}
+                className={`flex items-center gap-4 p-3 rounded-xl relative overflow-hidden text-left transition-all ${
+                  selectedVehicle === "medium-truck"
+                    ? "border-2 border-[#C9A24D] bg-[#C9A24D]/20"
+                    : "border border-[#22303B] hover:border-[#C9A24D]/50 hover:bg-[#0B131A]"
+                }`}
+              >
+                <div className={`rounded-lg p-2 shrink-0 ${selectedVehicle === "medium-truck" ? "bg-[#0B131A] shadow-sm" : "bg-[#0B131A]"}`}>
+                  <span className={`material-symbols-outlined text-3xl ${selectedVehicle === "medium-truck" ? "text-[#E6E8EA]" : "text-[#9BA7B0]"}`}>
+                    airport_shuttle
+                  </span>
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-center w-full">
-                    <p className="text-[#E6E8EA] font-semibold text-base">Medium Truck</p>
-                    <p className="text-[#E6E8EA] font-semibold text-base">$145.00</p>
+                    <p className={`text-base ${selectedVehicle === "medium-truck" ? "text-[#E6E8EA] font-bold" : "text-[#E6E8EA] font-semibold"}`}>
+                      Medium Truck
+                    </p>
+                    <p className={`text-base ${selectedVehicle === "medium-truck" ? "text-[#E6E8EA] font-bold" : "text-[#E6E8EA] font-semibold"}`}>
+                      $145.00
+                    </p>
                   </div>
                   <div className="flex justify-between items-center w-full">
                     <p className="text-[#9BA7B0] text-xs truncate">1-2 Bedroom apartments</p>
                     <p className="text-[#9BA7B0] text-xs">12 min away</p>
                   </div>
                 </div>
+                {/* Active Indicator */}
+                {selectedVehicle === "medium-truck" && (
+                  <div className="absolute right-0 top-0 bottom-0 w-1.5 bg-[#C9A24D] rounded-r-xl"></div>
+                )}
               </button>
 
-              {/* Option 3 */}
-              <button className="flex items-center gap-4 p-3 rounded-xl border border-[#22303B] hover:border-[#C9A24D]/50 hover:bg-[#0B131A] text-left transition-all">
-                <div className="bg-[#0B131A] rounded-lg p-2 shrink-0">
-                  <span className="material-symbols-outlined text-3xl text-[#9BA7B0]">fire_truck</span>
+              {/* Option 3 - XL Mover */}
+              <button 
+                onClick={() => setSelectedVehicle("xl-mover")}
+                className={`flex items-center gap-4 p-3 rounded-xl relative overflow-hidden text-left transition-all ${
+                  selectedVehicle === "xl-mover"
+                    ? "border-2 border-[#C9A24D] bg-[#C9A24D]/20"
+                    : "border border-[#22303B] hover:border-[#C9A24D]/50 hover:bg-[#0B131A]"
+                }`}
+              >
+                <div className={`rounded-lg p-2 shrink-0 ${selectedVehicle === "xl-mover" ? "bg-[#0B131A] shadow-sm" : "bg-[#0B131A]"}`}>
+                  <span className={`material-symbols-outlined text-3xl ${selectedVehicle === "xl-mover" ? "text-[#E6E8EA]" : "text-[#9BA7B0]"}`}>
+                    fire_truck
+                  </span>
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-center w-full">
-                    <p className="text-[#E6E8EA] font-semibold text-base">XL Mover</p>
-                    <p className="text-[#E6E8EA] font-semibold text-base">$220.00</p>
+                    <p className={`text-base ${selectedVehicle === "xl-mover" ? "text-[#E6E8EA] font-bold" : "text-[#E6E8EA] font-semibold"}`}>
+                      XL Mover
+                    </p>
+                    <p className={`text-base ${selectedVehicle === "xl-mover" ? "text-[#E6E8EA] font-bold" : "text-[#E6E8EA] font-semibold"}`}>
+                      $220.00
+                    </p>
                   </div>
                   <div className="flex justify-between items-center w-full">
                     <p className="text-[#9BA7B0] text-xs truncate">Entire homes & large furniture</p>
                     <p className="text-[#9BA7B0] text-xs">25 min away</p>
                   </div>
                 </div>
+                {/* Active Indicator */}
+                {selectedVehicle === "xl-mover" && (
+                  <div className="absolute right-0 top-0 bottom-0 w-1.5 bg-[#C9A24D] rounded-r-xl"></div>
+                )}
               </button>
             </div>
           </div>
